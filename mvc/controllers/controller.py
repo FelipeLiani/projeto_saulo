@@ -5,13 +5,32 @@ class Controller:
     def __init__(self, model, root):
         self.model = model
         self.view = View(root, self)
+        self.monitoramento_ativo = False
 
+    def toggle_monitoramento(self):
+        self.monitoramento_ativo = not self.monitoramento_ativo
 
-    def acao_botao_1(self):        
-        print("Controller=> O clique na view chamou o controller que imprimiu essa mensagem 1. Agora vou chamar o model, dizendo que o botao 1 foi clicado!")
-        self.model.acessar_bd("Botão 1 acionado")
+        if self.monitoramento_ativo:
+            print("Controller=> Monitoramento INICIADO")
+            self.view.btn_monitoramento.config(text="Parar Monitoramento")
+            self.model.acessar_bd("Monitoramento iniciado")
+        else:
+            print("Controller=> Monitoramento PARADO")
+            self.view.btn_monitoramento.config(text="Iniciar Monitoramento")
+            self.model.acessar_bd("Monitoramento parado")
 
+    def abrir_estatisticas(self):
+        print("Controller=> Abrindo estatísticas...")
+        self.view.criar_janela_modal("Estatísticas")
 
-    def acao_botao_2(self):        
-        print("Controller=> O clique na view chamou o controller que imprimiu essa mensagem 2. Agora vou chamar o model, dizendo que o botao 2 foi clicado!") 
-        self.model.acessar_bd("Botão 2 acionado")
+    def abrir_sugestoes(self):
+        print("Controller=> Abrindo sugestões...")
+        self.view.criar_janela_modal("Sugestões de Alongamento")
+
+    def abrir_historico(self):
+        print("Controller=> Abrindo histórico...")
+        self.view.criar_janela_modal("Histórico de Sessões")
+
+    def abrir_configuracoes(self):
+        print("Controller=> Abrindo configurações...")
+        self.view.criar_janela_modal("Configurações")
