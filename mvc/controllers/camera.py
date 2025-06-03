@@ -3,7 +3,7 @@ from views.camera import CameraView
 class CameraController:
     def __init__(self, model, root):
         self.model = model
-        self.view = CameraView(root, self)
+        #self.view = CameraView(root, self)
         self.is_running = False
 
     def handle_action(self, action):
@@ -11,6 +11,7 @@ class CameraController:
         if action == "start":
             if self.model.start_camera():
                 self.is_running = True
+                self.view.criar_janela_modal('janela')
                 self.update_frame()
             else:
                 self.view.show_error("Não foi possível acessar a câmera.")
