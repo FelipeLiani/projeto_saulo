@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from PIL import Image, ImageTk
 
 class View:
     def __init__(self, root, controller):
@@ -8,6 +9,8 @@ class View:
         self.window.geometry("600x600")
         self.window.title("Aplicação de Monitoramento Postural")
         self.window.resizable(False, False)
+
+        self.labelCamera = None
 
         # Configuração de estilos
         self.style = ttk.Style()
@@ -40,7 +43,7 @@ class View:
         self.btn_monitoramento = ttk.Button(
             self.main_frame,
             text="Iniciar Monitoramento",
-            command=self.controller.toggle_monitoramento,
+            command=lambda: self.controller.toggle_monitoramento(),
             style='Btn.TButton'
         )
         self.btn_monitoramento.pack(pady=10, fill='x')
@@ -87,6 +90,38 @@ class View:
             text="© 2023 Sistema de Monitoramento Postural",
             style='Topo.TLabel'
         ).pack(pady=5)
+
+    def criar_janela_modal_camera(self, titulo):
+        janela = tk.Toplevel(self.window)
+        janela.title(titulo)
+        janela.geometry("800x600")
+        janela.resizable(False, False)
+        janela.grab_set()  # Torna a janela modal
+        janela.protocol("WM_DELETE_WINDOW", lambda: self.close_this_shit(janela))
+    
+        self.labelCamera = tk.Label(janela)
+        self.labelCamera.pack(padx=20, pady=20)
+
+        tk.Button(
+            janela,
+            text="Fechar",
+            command=lambda: self.close_this_shit(janela)
+        ).pack(pady=15)
+    
+    def close_this_shit(self, janela):
+        if self.controller.monitoramento_ativo:
+            self.controller.toggle_monitoramento()
+            janela.destroy()
+    
+    def update_image(self, image):
+        """Atualiza a imagem exibida no label."""
+
+        if image is not None:
+            # Converte o frame numpy para ImageTk
+            image = Image.fromarray(image)
+            image = ImageTk.PhotoImage(image)
+            self.labelCamera.configure(image=image)
+            self.labelCamera.image = image 
 
     def criar_janela_modal(self, titulo):
         janela = tk.Toplevel(self.window)

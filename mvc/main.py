@@ -8,8 +8,9 @@ from models.camera import CameraModel
 def main():
     root = tk.Tk()
     model = Model()
-    controller = Controller(model, root)
-    CameraController(CameraModel(), root)
+    cameraController = CameraController(CameraModel(), root)
+    controller = Controller(model, CameraModel(), root)
+    
     root.mainloop()
 
 if __name__ == "__main__":
