@@ -26,5 +26,6 @@ class CameraModel:
             if ret:
                 # Converte o frame de BGR (OpenCV) para RGB
                 frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                return frame_rgb
+                frame_fip = cv2.flip(frame_rgb, 1)
+                return frame_fip
         return None
