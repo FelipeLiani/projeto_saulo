@@ -4,124 +4,114 @@ from PIL import Image, ImageTk
 
 class View:
     def __init__(self, root, controller):
-        self.window = root
+        self.root = root
         self.controller = controller
-        self.window.geometry("600x600")
-        self.window.title("Aplicação de Monitoramento Postural")
-        self.window.resizable(False, False)
+        controller.view = self  # Referência circular
 
-        self.labelCamera = None
+        # Configuração da janela principal
+        self.root.geometry("600x600")
+        self.root.title("Monitoramento Postural")
+        self.root.resizable(False, False)
+
+        # Variáveis de estado
+        self.label_camera = None
 
         # Configuração de estilos
+        self._configurar_estilos()
+
+        # Criar a interface
+        self._criar_interface()
+
+    def _configurar_estilos(self):
+        """Configura os estilos visuais"""
         self.style = ttk.Style()
         self.style.configure('Topo.TFrame', background='#2c3e50')
-        self.style.configure('Topo.TLabel', foreground='white', background='#2c3e50', font=('Arial', 14, 'bold'))
-        self.style.configure('Btn.TButton', font=('Arial', 10), padding=10)
+        self.style.configure('Topo.TLabel',
+                           foreground='white',
+                           background='#2c3e50',
+                           font=('Arial', 14, 'bold'))
+        self.style.configure('Btn.TButton',
+                           font=('Arial', 10),
+                           padding=10)
 
-        # Criar frames
-        self._criar_frame_topo()
-        self._criar_frame_principal()
-        self._criar_frame_rodape()
+    def _criar_interface(self):
+        """Cria todos os elementos da interface"""
+        # Frame superior
+        top_frame = ttk.Frame(self.root, height=70, style='Topo.TFrame')
+        top_frame.pack(fill="x")
+        ttk.Label(top_frame,
+                 text="Monitoramento Postural",
+                 style='Topo.TLabel').pack(pady=20)
 
-    def _criar_frame_topo(self):
-        self.top_frame = ttk.Frame(self.window, height=70, style='Topo.TFrame')
-        self.top_frame.pack(fill="x", padx=0, pady=0)
-        self.top_frame.pack_propagate(False)
+        # Frame principal
+        main_frame = ttk.Frame(self.root)
+        main_frame.pack(padx=20, pady=20, fill="both", expand=True)
 
-        self.title_label = ttk.Label(
-            self.top_frame,
-            text="Monitoramento Postural",
-            style='Topo.TLabel'
-        )
-        self.title_label.pack(pady=20)
-
-    def _criar_frame_principal(self):
-        self.main_frame = ttk.Frame(self.window)
-        self.main_frame.pack(padx=20, pady=20, fill="both", expand=True)
-
-        # Botão de toggle para monitoramento
+        # Botão de monitoramento (PRINCIPAL)
         self.btn_monitoramento = ttk.Button(
-            self.main_frame,
+            main_frame,
             text="Iniciar Monitoramento",
-            command=lambda: self.controller.toggle_monitoramento(),
+            command=self.controller.toggle_monitoramento,
             style='Btn.TButton'
         )
         self.btn_monitoramento.pack(pady=10, fill='x')
 
-        # Botão para estatísticas
-        ttk.Button(
-            self.main_frame,
-            text="Ver Estatísticas",
-            command=self.controller.abrir_estatisticas,
-            style='Btn.TButton'
-        ).pack(pady=10, fill='x')
+        # Outros botões
+        botoes = [
+            ("Estatísticas", self.controller.abrir_estatisticas),
+            ("Sugestões", self.controller.abrir_sugestoes),
+            ("Histórico", self.controller.abrir_historico),
+            ("Configurações", self.controller.abrir_configuracoes)
+        ]
 
-        # Botão para sugestões
-        ttk.Button(
-            self.main_frame,
-            text="Sugestões de Alongamento",
-            command=self.controller.abrir_sugestoes,
-            style='Btn.TButton'
-        ).pack(pady=10, fill='x')
+        for texto, comando in botoes:
+            ttk.Button(
+                main_frame,
+                text=texto,
+                command=comando,
+                style='Btn.TButton'
+            ).pack(pady=5, fill='x')
 
-        # Botão para histórico
-        ttk.Button(
-            self.main_frame,
-            text="Histórico de Sessões",
-            command=self.controller.abrir_historico,
-            style='Btn.TButton'
-        ).pack(pady=10, fill='x')
-
-        # Botão para configurações
-        ttk.Button(
-            self.main_frame,
-            text="Configurações",
-            command=self.controller.abrir_configuracoes,
-            style='Btn.TButton'
-        ).pack(pady=10, fill='x')
-
-    def _criar_frame_rodape(self):
-        self.bottom_frame = ttk.Frame(self.window, height=30, style='Topo.TFrame')
-        self.bottom_frame.pack(fill="x", side="bottom")
-        self.bottom_frame.pack_propagate(False)
-
-        ttk.Label(
-            self.bottom_frame,
-            text="© 2023 Sistema de Monitoramento Postural",
-            style='Topo.TLabel'
-        ).pack(pady=5)
+        # Rodapé
+        bottom_frame = ttk.Frame(self.root, height=30, style='Topo.TFrame')
+        bottom_frame.pack(fill="x", side="bottom")
+        ttk.Label(bottom_frame,
+                 text="© 2024 Sistema de Monitoramento Postural",
+                 style='Topo.TLabel').pack(pady=5)
 
     def criar_janela_modal_camera(self, titulo):
-        janela = tk.Toplevel(self.window)
-        janela.title(titulo)
-        janela.geometry("800x600")
-        janela.resizable(False, False)
-        janela.grab_set()  # Torna a janela modal
-        janela.protocol("WM_DELETE_WINDOW", lambda: self.close_this_shit(janela))
-    
-        self.labelCamera = tk.Label(janela)
-        self.labelCamera.pack(padx=20, pady=20)
+        """Cria janela modal para exibir a câmera"""
+        self.janela_camera = tk.Toplevel(self.root)
+        self.janela_camera.title(titulo)
+        self.janela_camera.geometry("800x600")
+        self.janela_camera.resizable(False, False)
 
+        # Label para exibir a imagem da câmera
+        self.label_camera = tk.Label(self.janela_camera)
+        self.label_camera.pack(padx=20, pady=20)
+
+        # Botão para fechar
         tk.Button(
-            janela,
+            self.janela_camera,
             text="Fechar",
-            command=lambda: self.close_this_shit(janela)
+            command=self._fechar_janela_camera
         ).pack(pady=15)
-    
-    def close_this_shit(self, janela):
+
+        self.janela_camera.protocol("WM_DELETE_WINDOW", self._fechar_janela_camera)
+
+    def _fechar_janela_camera(self):
+        """Fecha a janela da câmera e para o monitoramento"""
         if self.controller.monitoramento_ativo:
             self.controller.toggle_monitoramento()
-            janela.destroy()
-    
-    def update_image(self, image):
-        """Atualiza a imagem exibida no label."""
+        self.janela_camera.destroy()
 
+    def update_image(self, image):
+        """Atualiza a imagem exibida no label da câmera"""
         if image is not None:
-            # Converte o frame numpy para ImageTk
             image = Image.fromarray(image)
             image = ImageTk.PhotoImage(image)
-            self.labelCamera.configure(image=image)
-            self.labelCamera.image = image 
+            self.label_camera.configure(image=image)
+            self.label_camera.image = image  # Mantém referência
 
     def criar_modal(self, titulo, conteudo):
         janela = tk.Toplevel(self.window)
@@ -154,18 +144,17 @@ class View:
         janela.update_idletasks()
 
     def criar_janela_modal(self, titulo):
-        janela = tk.Toplevel(self.window)
+        """Cria uma janela modal genérica"""
+        janela = tk.Toplevel(self.root)
         janela.title(titulo)
         janela.geometry("400x300")
         janela.resizable(False, False)
-        janela.grab_set()  # Torna a janela modal
 
         ttk.Label(
             janela,
-            text=f"Conteúdo da tela de {titulo} será exibido aqui",
-            font=('Arial', 12),
-            justify='center'
-        ).pack(expand=True, padx=20, pady=20)
+            text=f"Conteúdo de {titulo} será exibido aqui",
+            font=('Arial', 12)
+        ).pack(expand=True)
 
         ttk.Button(
             janela,
