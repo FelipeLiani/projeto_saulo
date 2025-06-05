@@ -64,22 +64,6 @@ class View:
             style='Btn.TButton'
         ).pack(pady=10, fill='x')
 
-        # Botão para histórico
-        ttk.Button(
-            self.main_frame,
-            text="Histórico de Sessões",
-            command=self.controller.abrir_historico,
-            style='Btn.TButton'
-        ).pack(pady=10, fill='x')
-
-        # Botão para configurações
-        ttk.Button(
-            self.main_frame,
-            text="Configurações",
-            command=self.controller.abrir_configuracoes,
-            style='Btn.TButton'
-        ).pack(pady=10, fill='x')
-
     def _criar_frame_rodape(self):
         self.bottom_frame = ttk.Frame(self.window, height=30, style='Topo.TFrame')
         self.bottom_frame.pack(fill="x", side="bottom")
@@ -87,7 +71,7 @@ class View:
 
         ttk.Label(
             self.bottom_frame,
-            text="© 2023 Sistema de Monitoramento Postural",
+            text="© 2025 Sistema de Monitoramento Postural",
             style='Topo.TLabel'
         ).pack(pady=5)
     

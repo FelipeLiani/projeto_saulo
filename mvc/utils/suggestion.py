@@ -56,10 +56,8 @@ def get_response():
     # Enviando a requisição
     response = requests.post(url, json=payload, headers=headers)
 
-    print(response.status_code)
     # Verificando a resposta
     if response.status_code == 200:
-        print(response.json())
         return response.json()['choices'][0]['message']['content']
     
     return 'Erro! Algo deu errado.'
