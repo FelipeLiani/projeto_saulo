@@ -1,5 +1,6 @@
 from views.view import View
 from models.model import Model
+from utils.suggestion import get_response
 
 class Controller:
     def __init__(self, model, cameraModel, root):
@@ -38,8 +39,9 @@ class Controller:
         self.view.criar_janela_modal("Estatísticas")
 
     def abrir_sugestoes(self):
+        response = get_response()
         print("Controller=> Abrindo sugestões...")
-        self.view.criar_janela_modal("Sugestões de Alongamento")
+        self.view.criar_modal("Sugestões", response)
 
     def abrir_historico(self):
         print("Controller=> Abrindo histórico...")

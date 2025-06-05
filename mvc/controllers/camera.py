@@ -1,5 +1,3 @@
-from views.camera import CameraView
-
 class CameraController:
     def __init__(self, model, root):
         self.model = model

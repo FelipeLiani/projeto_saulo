@@ -123,6 +123,36 @@ class View:
             self.labelCamera.configure(image=image)
             self.labelCamera.image = image 
 
+    def criar_modal(self, titulo, conteudo):
+        janela = tk.Toplevel(self.window)
+        janela.title(titulo)
+        janela.geometry("400x600")
+        janela.resizable(False, False)
+        janela.grab_set()  # Torna a janela modal
+        
+        frame = tk.Frame(janela)
+        frame.pack(fill=tk.BOTH, expand=True)
+
+        # Criar a Scrollbar
+        scrollbar = tk.Scrollbar(frame)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        text_widget = tk.Text(frame, wrap=tk.WORD, yscrollcommand=scrollbar.set, font=("Arial", 12))
+        text_widget.insert(tk.END, conteudo)
+        text_widget.pack(fill=tk.BOTH, expand=True)
+
+        # Configurar a Scrollbar para controlar o Text
+        scrollbar.config(command=text_widget.yview)
+
+        ttk.Button(
+            janela,
+            text="Fechar",
+            command=janela.destroy
+        ).pack(pady=10)
+
+        
+        janela.update_idletasks()
+
     def criar_janela_modal(self, titulo):
         janela = tk.Toplevel(self.window)
         janela.title(titulo)

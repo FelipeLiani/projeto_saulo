@@ -2,11 +2,18 @@ import os
 import sqlite3
 import json
 from groq import Groq
+import requests
 
-def fetch_data_as_json(tabela):
+def fetch_data_as_json(tabela, mocked = False):
     # Caminho relativo do banco de dados
     base_dir = os.path.dirname(os.path.abspath(__file__))  # /mvc/utils
-    db_path = os.path.join(base_dir, "../../database/databases/postura_dummy.db")
+    
+    db_name = 'postura_dummy.db'
+
+    if mocked == False:
+        db_name = 'postura.db'
+
+    db_path = os.path.join(base_dir, "../../database/databases/" + db_name)
 
     # Conectar ao banco
     conn = sqlite3.connect(db_path)
@@ -26,26 +33,34 @@ def fetch_data_as_json(tabela):
     # Converter para JSON
     return json.dumps(data, indent=4, ensure_ascii=False)
 
+def get_response():
+    # Token de autorização (substitua pela mensagem acima, removendo "gsk_" e espaços)
+    token = "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"
 
-# Cliente da Groq
-client = Groq(api_key="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")
+    # URL da API
+    url = "https://api.groq.com/openai/v1/chat/completions"
 
-chat_completion = client.chat.completions.create(
-    messages=[
-        {
-            "role": "user",
-            "content": "Explain the importance of fast language models",
-        }
-    ],
-    model="llama-3.3-70b-versatile",
-)
+    data = fetch_data_as_json('eventos_postura', True)
 
-print(chat_completion.choices[0].message.content)
+    # Corpo da requisição
+    payload = {
+        "model": "llama-3.3-70b-versatile",
+        "messages": [{"role": "user", "content": 'Dê sugestões de exercícios para alivar má postura em portugues com base nos eventos de postura. Caso a pessoa fica com postura correta com frequencia, quero que parabenize e dê segestões. Se os dados forem vazio, apenas dê sugestões. Dados: ' + data}]
+    }
 
-# Exemplo de uso da função de banco de dados
-if __name__ == "__main__":
-    json_sessoes = fetch_data_as_json("sessoes")
-    json_eventos_postura = fetch_data_as_json("eventos_postura")
-    #print(f"\nTabela sessões:\n{json_sessoes}")
-    #print(f"\nTabela sessões:\n{json_eventos_postura}")
-    print(chat_completion.choices[0].message.content)
+    # Cabeçalhos
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+    }
+
+    # Enviando a requisição
+    response = requests.post(url, json=payload, headers=headers)
+
+    print(response.status_code)
+    # Verificando a resposta
+    if response.status_code == 200:
+        print(response.json())
+        return response.json()['choices'][0]['message']['content']
+    
+    return 'Erro! Algo deu errado.'
