@@ -108,6 +108,7 @@ class View:
     def update_image(self, image):
         """Atualiza a imagem exibida no label da câmera"""
         if image is not None:
+            print('aaaaaaaaaaa')
             image = Image.fromarray(image)
             image = ImageTk.PhotoImage(image)
             self.label_camera.configure(image=image)

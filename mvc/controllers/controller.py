@@ -46,6 +46,8 @@ class Controller:
             self.view.criar_janela_modal_camera("Monitoramento Postural Ativo")
             self.view.btn_monitoramento.config(text="Parar Monitoramento")
 
+            self.monitoramento_ativo = True
+
             # 4. Inicia o loop de atualização de frames
             self._update_frame_loop()
 
@@ -73,14 +75,13 @@ class Controller:
         """Atualiza continuamente o frame da câmera na interface."""
         if self.monitoramento_ativo:  # Remove a verificação da câmera
             frame = self.camera_model.get_frame()
+            print('tenho frame!!')
 
             if frame is not None:
-                try:
-                    self.view.update_image(frame)
-                except Exception as e:
-                    print(f"Erro ao atualizar frame: {str(e)}")
+                self.view.update_image(frame)
 
             # Agenda a próxima atualização
+            print('rodou aqui')
             self.root.after(33, self._update_frame_loop)
 
     # Funções para outras funcionalidades da interface
