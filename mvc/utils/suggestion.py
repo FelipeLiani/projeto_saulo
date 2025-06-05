@@ -1,7 +1,6 @@
 import os
 import sqlite3
 import json
-from groq import Groq
 import requests
 
 def fetch_data_as_json(tabela, mocked = False):
@@ -31,7 +30,7 @@ def fetch_data_as_json(tabela, mocked = False):
     conn.close()
 
     # Converter para JSON
-    return json.dumps(data, indent=4, ensure_ascii=False)
+    return data
 
 def get_response():
     # Token de autorização (substitua pela mensagem acima, removendo "gsk_" e espaços)
@@ -40,7 +39,7 @@ def get_response():
     # URL da API
     url = "https://api.groq.com/openai/v1/chat/completions"
 
-    data = fetch_data_as_json('eventos_postura', True)
+    data = json.dumps(fetch_data_as_json('eventos_postura', True), indent=4, ensure_ascii=False)
 
     # Corpo da requisição
     payload = {

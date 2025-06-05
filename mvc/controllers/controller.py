@@ -1,6 +1,7 @@
 from views.view import View
 from models.model import Model
 from utils.suggestion import get_response
+from utils.matplot import create_graph
 
 class Controller:
     def __init__(self, model, cameraModel, root):
@@ -36,7 +37,9 @@ class Controller:
 
     def abrir_estatisticas(self):
         print("Controller=> Abrindo estatísticas...")
-        self.view.criar_janela_modal("Estatísticas")
+        window = self.view.criar_janela_com_grafico()
+        create_graph(window)
+
 
     def abrir_sugestoes(self):
         response = get_response()

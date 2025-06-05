@@ -90,6 +90,15 @@ class View:
             text="© 2023 Sistema de Monitoramento Postural",
             style='Topo.TLabel'
         ).pack(pady=5)
+    
+    def criar_janela_com_grafico(self):
+        janela = tk.Toplevel(self.window)
+        janela.title('Estatistica')
+        janela.geometry("800x600")
+        janela.resizable(False, False)
+        janela.grab_set()  # Torna a janela modal
+
+        return janela
 
     def criar_janela_modal_camera(self, titulo):
         janela = tk.Toplevel(self.window)
